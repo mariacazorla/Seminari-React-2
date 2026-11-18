@@ -83,9 +83,10 @@ export const useTodoDetail = (rawId: string | undefined): UseTodoDetailResult =>
 
   const toggle = useCallback(async (): Promise<void> => {
     if (todo === null) return;
+    // Al entrar por URL, la tarea puede estar solo en el estado local.
+    if (cachedTodo === null) setFetchedTodo({ ...todo, completed: !todo.completed });
     const updated: Todo | null = await toggleTodo(todo);
-    // Si la tarea no estaba en el estado global, sincronizamos también la copia local.
-    if (updated !== null && cachedTodo === null) setFetchedTodo(updated);
+    if (cachedTodo === null) setFetchedTodo(updated ?? todo);
   }, [todo, cachedTodo, toggleTodo]);
 
   const remove = useCallback(

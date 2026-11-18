@@ -1,5 +1,13 @@
 # EA Exercise React · BackOffice de tareas
 
+## Ejercicio adicional realizado
+
+`toggleTodo` ahora cambia la tarea en pantalla antes de recibir la respuesta de la API. Si la petición falla, restaura la tarea original. También funciona al entrar directamente al detalle por URL.
+
+Las pruebas de `src/controllers/useTodoMutations.test.tsx` comprueban el cambio inmediato y la recuperación cuando falla la petición, tanto con estado global como con estado local.
+
+El backend del primer ejercicio está en [Seminari-React-1](https://github.com/mariacazorla/Seminari-React-1). Para conectarlo, copia `.env.example` a `.env.local` y utiliza `REACT_APP_API_URL=http://localhost:4000/api`. Arranca el backend y después ejecuta `npm install` y `npm start` aquí.
+
 Frontend en **React 17 + TypeScript (strict)** que consume una **API REST** (Express) para gestionar tareas (CRUD completo), maquetado con **Tailwind CSS + daisyUI**.
 
 > 📘 La explicación teórica de cada patrón, con ejemplos del propio código, está en **[CONCEPTS.md](./CONCEPTS.md)**. La sección central es *Consumo de APIs REST en React*.

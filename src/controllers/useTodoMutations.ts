@@ -8,11 +8,8 @@ import { useNotifications } from './useNotifications';
 /**
  * Controller de ESCRITURA: crear, modificar y eliminar tareas.
  *
- * Estrategia de sincronización PESIMISTA:
- *   1. Se envía la petición al servidor.
- *   2. Solo si el servidor responde 2xx, se actualiza el estado global con
- *      la respuesta del servidor (la "fuente de verdad" es la base de datos).
- *   3. Si falla, el estado no se toca y se informa al usuario.
+ * Crear y eliminar esperan la respuesta del servidor.
+ * Al completar una tarea, mostramos el cambio al momento y lo deshacemos si falla.
  *
  * Cada función devuelve un resultado (`Todo | null`, `boolean`) para que la
  * vista pueda reaccionar (limpiar el formulario, navegar...).
@@ -46,6 +43,8 @@ export const useTodoMutations = (): UseTodoMutationsResult => {
   const toggleTodo = useCallback(
     async (todo: Todo): Promise<Todo | null> => {
       dispatch({ type: 'mutation_start', payload: todo.id });
+      // Conservamos todo sin modificarlo para poder volver atrás.
+      dispatch({ type: 'todo_updated', payload: { ...todo, completed: !todo.completed } });
       try {
         // PATCH: solo enviamos el campo que cambia (modificación parcial).
         const updated: Todo = await updateTodo(todo.id, { completed: !todo.completed });
@@ -53,6 +52,7 @@ export const useTodoMutations = (): UseTodoMutationsResult => {
         notify('success', updated.completed ? 'Tarea completada.' : 'Tarea marcada como pendiente.');
         return updated;
       } catch (error: unknown) {
+        dispatch({ type: 'todo_updated', payload: todo });
         notify('error', `No se ha podido actualizar la tarea: ${getErrorMessage(error)}`);
         return null;
       } finally {
